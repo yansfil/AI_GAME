@@ -1,0 +1,72 @@
+*용어
+overfitting : 한 데이터 set에 너무 잘맞춰놔서 다른 데이터셋에 피팅이 이상하게 되는 현상
+overflow : 컴퓨터는 4, 8바이트같은 유한한 데이터를 다루나 너무 큰 값은 표현할 수 가 없음.
+MNIST : 손글씨 숫자 이미지 집합.
+forward propagation : 순전파
+backward propagation : 역전파
+Affine transformation : 어파인 변환(순전파 때 수행하는 행렬의 내적)
+transposed matrix : 전치행렬(행렬 곱 순서 바뀐 것.)
+
+
+
+1 array에서 array추출하기
+array1 = numpy.array([[0,1,2],[3,4,5],[7,8,9]])
+array1[0,1]      # 1번째 행에 2번째 원소인 1을 반환
+array1[[0,1]]     # 1번째와 2번째 행을 반환하므로 [[0,1,2],[3,4,5]] 를 반환.. 이는 array형태를 유지하면서 특정한 행을 추출해서 가져오는 mini batch가 가능하다.
+array1[[0,1],[2,3]]     # [array1[0,2] , array1[1,3]]을 반환해준다. 즉 선택된 값들이 모인 array를 반환해준다
+array1 * [1,2,3]        # [[0,2,6],[3,8,15],[7,16,27]]
+array2가 array1가 동일한 형상에 true, false일 때 , array1[array2] 는 array2에서 true인 부분만 array1에서 추출한다.
+
+
+2 boolean array를 int array로 변환해주는 방법
+y = [true , false, false]
+y = y.astype(np.int) //true는 1로 , false 는 0으로ㄴ
+print(y) # [1,0,0]
+
+3. 행렬(list)의 차원을 알고싶으면 np.ndim()
+    n * m 행렬에서 n,m이 알고싶으면 list.shape  # 튜플로 반환 ex) (5,3)
+
+4 형상을 변화시켰는데 되돌리고 싶은 경우 A.reshape(28,28) 이런식으로 사용하면 형상 변환 가능
+   A.reshape(28,28).transpose()
+
+5 array 의 차이 : [1,2,3] #1차원행렬 3       [[1,2,3]]  #2차원 행렬 1*3   ->행렬의 차이를 변환해주기 위해선 reshape(m,n,l) (m*n*l로 변환) 등 원하는 차원의 매개변수를 적어주면 된다.
+
+6 np.arrange(n) 을 하면 0부터 1씩올라가는 n개의 원소를 가진 배열을 생성함
+   np.arrange(x1,x2, k) 로 하면 x1~x2까지 k간격을 가진 수들로 array가 생김.
+
+7. numpy.random.randn ->  (0,1) 사이의 난수 발생
+    numpy.random.choice(x, n) 0~x까지의 수 중에서 무작위로 n개를 뽑아낸다.
+
+
+8. 활성화 함수의 종류는 퍼셉트론의 계단함수 , 신경망의 대표적 항등함수, sigmoid, ReLU, sofrtMax 함수가 있음. 
+    sigmoid : h= 1/ 1+np.exp(-x) ()
+    ReLU : h= {x (x>0) , 0 (x <= 0)  // np.maximum(0, x)
+    softMax : h = np.exp(a) / np.sum(np.exp(a)) #배열로 반환 , 총합은 1
+
+    * 회귀에서는 항등함수 , 2클래스 분류에서는 시그모이드 , 다중 클래스 분류에서는 소프트맥스를 주로 사용함
+    
+9. 손실함수)를 통해 가장 낮은 값을 가지게 하는 매개변수(가중치)로 결정이 된다. 이 때 시작 가중치들은 학습데이터 혹은 random을 통해 시작하는듯.
+    평균제곱 오차 mean squared error, MSE : E = 0.5 * np.sum((y-t)**2)   // y는 가중치 레이블, t는 정답 레이블(one-hot-encoding)
+    교차 엔트로피 오차 cross entropy error , CEE : E = -np.sum(t * np.log(y + delta)) #delta가 있는 이유는 log의 0을 막기위해.
+    
+10  학습알고리즘 - 미니배치 -> 기울기 산출 - > 매개변수 갱신
+
+11 함수를 간단하게 축약 like closer,  f = lambda x : x**2  이렇게 할 경우 인수가 x고 x^2을 반환하는 함수 f가 만들어진다!
+      lambda 인자 : 표현식(return 값)
+
+12 1에폭은 학습에서 훈련에서 훈련 데이터를 모두 소진했을 때의 횟수를 뜻함. 1에폭마다 훈련데이터뿐만 아니라 시험데이터도 정확도를 비교해볼 필요가 있다!! 훈련데이터의 정확도는 높아지는데, test데이터는 정확도가 떨어질 수 있으므로.. 그래야 overfitting을 방지할 수 있다!
+
+13 np.sum([[1,2,3],[4,5,6]],axis = 0)  이는 0번째 축에 대해 총합을 구한다.
+
+14 softmax with Loss 는 역전파를 했을 때 y : softmax계층의 출력, t : 정답레이블(one-hot-encoding) 일때 (y-t) 가 기울기가 된다. 항등함수와 평균제곱오차도 마찬가지로 (y-t)가 기울기가 된다. 이는 이 손실함수들이 이에 맞춰 설게된 것.
+
+- Convolutional neural network(CNN)-
+= convolutional layer(합성곱 계층) + pooling layer(풀링 계층)
+fully connected layer(= Affine layer) : Affine 계층 뒤에 활성화 함수를 가진다. 대신 CNN은 활성화함수 사이에 Conv와 pooling이 들어간다.
+- 합성곱계층
+: 입출력 데이터를 feature map라고 한다. filter(=kernal)를 이용해 fused multiply add (FMA)를 해서 합성곱 연산을 처리한다. 
+padding : 주변을 특정값(예컨대 0)으로 채움으로서 출력크기를 조정할 수 있다. 입력 데이터의 공간적 크기를 고정한 채로 다음 계층에 전달이 가능
+stride : 필터를 적용하는 윈도우가 이동하는 간격. 
+
+
+
